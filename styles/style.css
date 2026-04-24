@@ -2,6 +2,6 @@ body {
     background-color: black;
 }
 
-text {
+p, label, h1, h2 {
     color: cyan;
 }

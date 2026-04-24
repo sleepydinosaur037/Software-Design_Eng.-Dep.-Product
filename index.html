@@ -30,41 +30,53 @@
         <script src="" async defer></script>
     </body>
     
-    	<div class="question-container">
-            <div class="question">
-                <h2>Question 1</h2>
-                <p>Which of the following fits in the blank?<br>This ___ example question.</p>
-                <input type="radio" id="q1-a" name="q1" value="a">A. is a</input>
-                <br>
-                <input type="radio" id="q1-b" name="q1" value="b">B. are a</input>
-                <br>
-                <input type="radio" id="q1-c" name="q1" value="c">C. is an</input>
-                <br>
-                <input type="radio" id="q1-d" name="q1" value="d">D. are an</input>
-                <p></p>
-            </div>
-            <div class="question">
-                <h2>Question 2</h2>
-                <p>What does the word 'present' mean?</p>
-                <input type="radio" id="q2-a" name="q2" value="a">A. now</input>
-                <br>
-                <input type="radio" id="q2-b" name="q2" value="b">B. here</input>
-                <br>
-                <input type="radio" id="q2-c" name="q2" value="c">C. gift</input>
-                <br>
-                <input type="radio" id="q2-d" name="q2" value="d">D. show</input>
-                <p></p>
-            </div>
-        </div>
+    	<div id="question-container" class="question-container"></div>
+        <p></p>
         <button id="quiz-check">Check Answer</button>
         <p id="quiz-result"></p>
     <!-- This can (and should) be split off into a separate js file -->
     <!-- But that's a future me problem -->
     <script>
-    	const questionCount = 2
-        const correctAnswers = ["c","abcd"]
-    	var quizCheck = document.getElementById("quiz-check")
-        var quizResult = document.getElementById("quiz-result")
+    	var questionCount = 0
+        const correctAnswers = []
+        const questionContainer = document.getElementById("question-container")
+        
+        function createQuestion(text, answerChoices, correct) {
+        	questionCount += 1
+            correctAnswers.push(correct)
+            
+            const newQuestion = document.createElement("div")
+            questionContainer.appendChild(newQuestion)
+            newQuestion.className = "question"
+            const heading = document.createElement("h2")
+            newQuestion.appendChild(heading)
+            heading.textContent = "Question " + questionCount
+            const questionText = document.createElement("p")
+            newQuestion.appendChild(questionText)
+            questionText.innerHTML = text
+            const letters = ["a","b","c","d","e"] // add as many as necessary
+            for (var i = 0; i < answerChoices.length; i++) {
+                const option = document.createElement("input")
+                newQuestion.appendChild(option)
+                option.type = "radio"
+                option.name = "q" + questionCount
+                option.value = letters[i]
+                option.id = "q" + questionCount + "-" + letters[i]
+                const label = document.createElement("label")
+                newQuestion.appendChild(label)
+                label.htmlFor = option.id
+                label.textContent = letters[i].toUpperCase() + ". " + answerChoices[i]
+                
+                newQuestion.appendChild(document.createElement("br"))
+            }
+        }
+		
+        createQuestion("Which of the following fits in the blank?<br>This ___ example question.", ["is a", "are a", "is an", "are an"], "c")
+        createQuestion("What does 'present' mean in this context?<br>The kid was <em>present</em> at the party.", ["now", "here", "gift", "show"], "b")
+        
+
+    	const quizCheck = document.getElementById("quiz-check")
+        const quizResult = document.getElementById("quiz-result")
         quizCheck.onclick = function(e) {
         	var score = 0
         	for (var q = 0; q < questionCount; q++) {
