@@ -1,7 +1,225 @@
-body {
-    background-color: black;
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
-p, label, h1 {
-    color: cyan;
+body {
+    background-color: #0d0d0d;
+    color: #e0e0e0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    padding: 1.5rem;
+    max-width: 860px;
+    margin-inline: auto;
+}
+
+h1 {
+    color: #00e5ff;
+    margin-bottom: 0.25rem;
+}
+
+h2 {
+    color: #00e5ff;
+    font-size: 1.1rem;
+    margin-top: 0;
+}
+
+h3 {
+    color: #80deea;
+    margin: 0.5rem 0;
+}
+
+p, label {
+    color: #c0c0c0;
+}
+
+/* ── Cards (step containers) ─────────────────────────────────────────────── */
+.card {
+    background: #1a1a2e;
+    border: 1px solid #00e5ff33;
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ── File upload ─────────────────────────────────────────────────────────── */
+.file-label {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.file-label-text {
+    display: inline-block;
+    background: #00e5ff;
+    color: #0d0d0d;
+    font-weight: 600;
+    padding: 0.45rem 1rem;
+    border-radius: 5px;
+    margin-right: 0.5rem;
+    transition: background 0.2s;
+}
+
+.file-label:hover .file-label-text {
+    background: #00bcd4;
+}
+
+#pdf_upload {
+    /* visually hidden but accessible */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+#upload-status {
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+    min-height: 1.2em;
+    color: #00e5ff;
+}
+
+/* ── Loading spinner ─────────────────────────────────────────────────────── */
+.spinner {
+    width: 28px;
+    height: 28px;
+    border: 4px solid #00e5ff44;
+    border-top-color: #00e5ff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-top: 0.5rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Chapter list ────────────────────────────────────────────────────────── */
+.chapter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 320px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.chapter-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0f3460;
+    border: 1px solid #00e5ff33;
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    gap: 1rem;
+}
+
+.chapter-item:hover {
+    background: #16213e;
+    border-color: #00e5ff88;
+}
+
+.chapter-item.selected {
+    background: #004d60;
+    border-color: #00e5ff;
+    outline: 2px solid #00e5ff;
+}
+
+.chapter-title {
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.chapter-pages {
+    color: #80deea;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+/* ── Text preview ────────────────────────────────────────────────────────── */
+.text-preview {
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 1rem;
+    max-height: 220px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #d0d0d0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin-bottom: 1rem;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+button {
+    background: #00e5ff;
+    color: #0d0d0d;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+}
+
+button:hover:not(:disabled) {
+    background: #00bcd4;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Selected info banner ────────────────────────────────────────────────── */
+.selected-info {
+    margin-top: 0.75rem;
+    background: #00402a;
+    border: 1px solid #00e676;
+    border-radius: 5px;
+    padding: 0.5rem 0.9rem;
+    color: #00e676;
+    font-size: 0.9rem;
+}
+
+/* ── Quiz section ────────────────────────────────────────────────────────── */
+.question-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.question {
+    background: #0f3460;
+    border: 1px solid #00e5ff22;
+    border-radius: 6px;
+    padding: 0.9rem 1.1rem;
+}
+
+.question p {
+    margin: 0.4rem 0 0.7rem;
+}
+
+.question label {
+    display: block;
+    margin: 0.3rem 0;
+    cursor: pointer;
+}
+
+.question label:hover {
+    color: #00e5ff;
+}
+
+#quiz-result {
+    margin-top: 0.6rem;
+    font-weight: 600;
+    color: #00e5ff;
 }

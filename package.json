@@ -1,0 +1,15 @@
+{
+  "name": "software-design_eng.-dep.-product",
+  "version": "1.0.0",
+  "description": "This project is a web application designed to let teachers upload text selections and generate generic multiple-choice reading quizzes.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pdfjs-dist": "^3.11.174"
+  }
+}
