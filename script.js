@@ -1,54 +1,55 @@
-// PDF.js is loaded via CDN in index.html
-// pdfjsLib is the global exposed by PDF.js
+// PDF.js 4.x — imported as an ES module from the vendored local build.
+import * as pdfjsLib from "./vendor/pdfjs/pdf.min.mjs";
 
-(function () {
-  "use strict";
+pdfjsLib.GlobalWorkerOptions.workerSrc = "./vendor/pdfjs/pdf.worker.min.mjs";
 
-  // ── State ──────────────────────────────────────────────────────────────────
-  let pdfDoc = null;          // loaded PDF document
-  let chapters = [];          // array of { title, startPage, endPage, text }
-  let selectedChapterIdx = null;
+"use strict";
 
-  // ── DOM refs ───────────────────────────────────────────────────────────────
-  const pdfInput        = document.getElementById("pdf_upload");
-  const uploadStatus    = document.getElementById("upload-status");
-  const chapterSection  = document.getElementById("chapter-section");
-  const chapterList     = document.getElementById("chapter-list");
-  const previewSection  = document.getElementById("preview-section");
-  const previewTitle    = document.getElementById("preview-title");
-  const previewText     = document.getElementById("preview-text");
-  const useChapterBtn   = document.getElementById("use-chapter-btn");
-  const selectedInfo    = document.getElementById("selected-info");
-  const loadingSpinner  = document.getElementById("loading-spinner");
+// ── State ──────────────────────────────────────────────────────────────────
+let pdfDoc = null;          // loaded PDF document
+let chapters = [];          // array of { title, startPage, endPage, text }
+let selectedChapterIdx = null;
 
-  // ── Helpers ────────────────────────────────────────────────────────────────
+// ── DOM refs ───────────────────────────────────────────────────────────────
+const pdfInput        = document.getElementById("pdf_upload");
+const uploadStatus    = document.getElementById("upload-status");
+const chapterSection  = document.getElementById("chapter-section");
+const chapterList     = document.getElementById("chapter-list");
+const previewSection  = document.getElementById("preview-section");
+const previewTitle    = document.getElementById("preview-title");
+const previewText     = document.getElementById("preview-text");
+const useChapterBtn   = document.getElementById("use-chapter-btn");
+const selectedInfo    = document.getElementById("selected-info");
+const loadingSpinner  = document.getElementById("loading-spinner");
 
-  /** Patterns that commonly mark the start of a chapter or major section. */
-  const CHAPTER_PATTERNS = [
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+/** Patterns that commonly mark the start of a chapter or major section. */
+const CHAPTER_PATTERNS = [
     /^(chapter\s+\w+[\s:–—-]*.*)/i,
     /^(prologue|epilogue|introduction|conclusion|preface|foreword|afterword|appendix[\s\w]*)/i,
     /^(part\s+\w+[\s:–—-]*.*)/i,
     /^(section\s+\d+[\s:–—-]*.*)/i,
-  ];
+];
 
-  function looksLikeChapterHeading(line) {
+function looksLikeChapterHeading(line) {
     const trimmed = line.trim();
     if (!trimmed || trimmed.length > 120) return false;
     return CHAPTER_PATTERNS.some((re) => re.test(trimmed));
-  }
+}
 
-  function setStatus(msg, isError = false) {
+function setStatus(msg, isError = false) {
     uploadStatus.textContent = msg;
     uploadStatus.style.color = isError ? "#ff6b6b" : "#00e5ff";
-  }
+}
 
-  function showSpinner(visible) {
+function showSpinner(visible) {
     loadingSpinner.style.display = visible ? "block" : "none";
-  }
+}
 
-  // ── PDF loading ────────────────────────────────────────────────────────────
+// ── PDF loading ────────────────────────────────────────────────────────────
 
-  async function extractPagesText(pdf) {
+async function extractPagesText(pdf) {
     const pages = [];
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
@@ -65,9 +66,9 @@
       pages.push({ pageNum: i, lines, text: lines.join("\n") });
     }
     return pages;
-  }
+}
 
-  function detectChapters(pages) {
+function detectChapters(pages) {
     const found = [];
 
     pages.forEach((page) => {
@@ -108,11 +109,11 @@
     });
 
     return found;
-  }
+}
 
-  // ── Render chapter list ────────────────────────────────────────────────────
+// ── Render chapter list ────────────────────────────────────────────────────
 
-  function renderChapterList() {
+function renderChapterList() {
     chapterList.innerHTML = "";
     chapters.forEach((ch, idx) => {
       const item = document.createElement("div");
@@ -143,9 +144,9 @@
 
       chapterList.appendChild(item);
     });
-  }
+}
 
-  function selectChapter(idx) {
+function selectChapter(idx) {
     selectedChapterIdx = idx;
     const ch = chapters[idx];
 
@@ -160,11 +161,11 @@
       ch.text.substring(0, 2000) + (ch.text.length > 2000 ? "\n\n[Preview truncated…]" : "");
     previewSection.style.display = "block";
     useChapterBtn.disabled = false;
-  }
+}
 
-  // ── "Use this chapter" button ──────────────────────────────────────────────
+// ── "Use this chapter" button ──────────────────────────────────────────────
 
-  useChapterBtn.addEventListener("click", () => {
+useChapterBtn.addEventListener("click", () => {
     if (selectedChapterIdx === null) return;
     const ch = chapters[selectedChapterIdx];
     // Expose selected text globally so the quiz-generation logic can consume it
@@ -172,11 +173,11 @@
     window.selectedChapterTitle = ch.title;
     selectedInfo.textContent = `✓ "${ch.title}" selected for quiz generation (${ch.wordCount} words).`;
     selectedInfo.style.display = "block";
-  });
+});
 
-  // ── Main upload handler ────────────────────────────────────────────────────
+// ── Main upload handler ────────────────────────────────────────────────────
 
-  pdfInput.addEventListener("change", async (e) => {
+pdfInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -211,5 +212,4 @@
     } finally {
       showSpinner(false);
     }
-  });
-})();
+});

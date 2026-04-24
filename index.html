@@ -68,13 +68,8 @@
             <p id="quiz-result"></p>
         </section>
 
-        <!-- ── PDF.js (vendored locally) loaded before app script ──────── -->
-        <script src="vendor/pdfjs/pdf.min.js"></script>
-        <script>
-            // Point PDF.js worker at the local vendored build
-            pdfjsLib.GlobalWorkerOptions.workerSrc = "vendor/pdfjs/pdf.worker.min.js";
-        </script>
-        <script src="script.js" defer></script>
+        <!-- ── App script (ES module; imports PDF.js from vendor/) ──────── -->
+        <script type="module" src="script.js"></script>
 
         <script>
             // Existing quiz-check logic
