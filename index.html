@@ -43,49 +43,34 @@
             <p id="selected-info" class="selected-info" style="display:none;"></p>
         </section>
 
-        <!-- ── Step 4: Quiz (existing demo) ──────────────────────────── -->
-        <section class="card" id="quiz-section">
-            <h2>Sample Quiz</h2>
-            <div class="question-container">
-                <div class="question">
-                    <h3>Question 1</h3>
-                    <p>Which of the following fits in the blank?<br>This ___ example question.</p>
-                    <label><input type="radio" name="q1" value="a"> A. is a</label><br>
-                    <label><input type="radio" name="q1" value="b"> B. are a</label><br>
-                    <label><input type="radio" name="q1" value="c"> C. is an</label><br>
-                    <label><input type="radio" name="q1" value="d"> D. are an</label>
-                </div>
-                <div class="question">
-                    <h3>Question 2</h3>
-                    <p>What does the word 'present' mean?</p>
-                    <label><input type="radio" name="q2" value="a"> A. now</label><br>
-                    <label><input type="radio" name="q2" value="b"> B. here</label><br>
-                    <label><input type="radio" name="q2" value="c"> C. gift</label><br>
-                    <label><input type="radio" name="q2" value="d"> D. show</label>
-                </div>
+        <!-- ── Step 4: Quiz Generation ────────────────────────────────── -->
+        <section class="card" id="generate-section" style="display:none;">
+            <h2>Step 4 — Generate Quiz Questions</h2>
+            <p>
+                The generator scans the selected chapter for key words, phrases, and ideas, then
+                builds multiple-choice questions automatically.
+            </p>
+            <div class="generate-controls">
+                <label for="question-count">Number of questions:</label>
+                <input
+                    type="number"
+                    id="question-count"
+                    min="1"
+                    max="20"
+                    value="5"
+                    aria-label="Number of questions to generate"
+                />
+                <button id="generate-btn">Generate Quiz</button>
             </div>
-            <button id="quiz-check">Check Answers</button>
-            <p id="quiz-result"></p>
+            <div id="gen-spinner" class="spinner" style="display:none;" aria-live="assertive" aria-label="Generating quiz questions, please wait"></div>
+            <div id="generated-quiz-output" class="question-container" style="margin-top:1rem;"></div>
+            <div id="gen-quiz-actions" style="display:none; margin-top:1rem;">
+                <button id="check-generated-btn">Check Answers</button>
+                <p id="gen-quiz-result"></p>
+            </div>
         </section>
 
         <!-- ── App script (ES module; imports PDF.js from vendor/) ──────── -->
         <script type="module" src="script.js"></script>
-
-        <script>
-            // Existing quiz-check logic
-            const questionCount = 2;
-            const correctAnswers = ["c", "abcd"];
-            document.getElementById("quiz-check").addEventListener("click", function () {
-                var score = 0;
-                for (var q = 0; q < questionCount; q++) {
-                    var option = document.querySelector("input[name='q" + (q + 1) + "']:checked");
-                    if (option && correctAnswers[q].includes(option.value)) {
-                        score += 1;
-                    }
-                }
-                document.getElementById("quiz-result").textContent =
-                    "You got " + score + "/" + questionCount + " questions correct.";
-            });
-        </script>
     </body>
 </html>
