@@ -1,82 +1,91 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Reading Quiz Generator</title>
-        <meta name="description" content="">
+        <meta name="description" content="Generate reading comprehension quizzes from uploaded book PDFs.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="/styles/style.css?v=0">
+        <link rel="stylesheet" href="styles/style.css">
     </head>
     <body>
-        <h1>Reading Quiz Generator!!!!!!!</h1>
-        <p>
-            Generate reading quizzes here.
-        </p>
-        <form method="post" enctype="multipart/form-data">
-            <div>
-                <label for="text_upload">Upload a file below.</label>
+        <h1>Reading Quiz Generator</h1>
+        <p>Upload a book PDF, choose a chapter or section, then generate quiz questions.</p>
+
+        <!-- ── Step 1: PDF Upload ─────────────────────────────────────── -->
+        <section class="card" id="upload-section">
+            <h2>Step 1 — Upload a Book PDF</h2>
+            <label class="file-label" for="pdf_upload">
+                <span class="file-label-text">Choose PDF…</span>
                 <input
-                    type="file" 
-                    id="text_upload"
-                    name="text_upload"
+                    type="file"
+                    id="pdf_upload"
+                    name="pdf_upload"
+                    accept="application/pdf"
                 />
+            </label>
+            <p id="upload-status"></p>
+            <div id="loading-spinner" class="spinner" style="display:none;" aria-live="polite" aria-label="Loading"></div>
+        </section>
+
+        <!-- ── Step 2: Chapter Selection ─────────────────────────────── -->
+        <section class="card" id="chapter-section" style="display:none;">
+            <h2>Step 2 — Select a Chapter or Section</h2>
+            <div id="chapter-list" class="chapter-list" role="list"></div>
+        </section>
+
+        <!-- ── Step 3: Text Preview ───────────────────────────────────── -->
+        <section class="card" id="preview-section" style="display:none;">
+            <h2>Step 3 — Preview Selected Text</h2>
+            <h3 id="preview-title"></h3>
+            <pre id="preview-text" class="text-preview"></pre>
+            <button id="use-chapter-btn" disabled>Use this chapter for quiz generation</button>
+            <p id="selected-info" class="selected-info" style="display:none;"></p>
+        </section>
+
+        <!-- ── Step 4: Quiz (existing demo) ──────────────────────────── -->
+        <section class="card" id="quiz-section">
+            <h2>Sample Quiz</h2>
+            <div class="question-container">
+                <div class="question">
+                    <h3>Question 1</h3>
+                    <p>Which of the following fits in the blank?<br>This ___ example question.</p>
+                    <label><input type="radio" name="q1" value="a"> A. is a</label><br>
+                    <label><input type="radio" name="q1" value="b"> B. are a</label><br>
+                    <label><input type="radio" name="q1" value="c"> C. is an</label><br>
+                    <label><input type="radio" name="q1" value="d"> D. are an</label>
+                </div>
+                <div class="question">
+                    <h3>Question 2</h3>
+                    <p>What does the word 'present' mean?</p>
+                    <label><input type="radio" name="q2" value="a"> A. now</label><br>
+                    <label><input type="radio" name="q2" value="b"> B. here</label><br>
+                    <label><input type="radio" name="q2" value="c"> C. gift</label><br>
+                    <label><input type="radio" name="q2" value="d"> D. show</label>
+                </div>
             </div>
-        </form>
-        <script src="" async defer></script>
-    </body>
-    
-    	<div class="question-container">
-            <div class="question">
-                <h2>Question 1</h2>
-                <p>Which of the following fits in the blank?<br>This ___ example question.</p>
-                <input type="radio" id="q1-a" name="q1" value="a">A. is a</input>
-                <br>
-                <input type="radio" id="q1-b" name="q1" value="b">B. are a</input>
-                <br>
-                <input type="radio" id="q1-c" name="q1" value="c">C. is an</input>
-                <br>
-                <input type="radio" id="q1-d" name="q1" value="d">D. are an</input>
-                <p></p>
-            </div>
-            <div class="question">
-                <h2>Question 2</h2>
-                <p>What does the word 'present' mean?</p>
-                <input type="radio" id="q2-a" name="q2" value="a">A. now</input>
-                <br>
-                <input type="radio" id="q2-b" name="q2" value="b">B. here</input>
-                <br>
-                <input type="radio" id="q2-c" name="q2" value="c">C. gift</input>
-                <br>
-                <input type="radio" id="q2-d" name="q2" value="d">D. show</input>
-                <p></p>
-            </div>
-        </div>
-        <button id="quiz-check">Check Answer</button>
-        <p id="quiz-result"></p>
-    <!-- This can (and should) be split off into a separate js file -->
-    <!-- But that's a future me problem -->
-    <script>
-    	const questionCount = 2
-        const correctAnswers = ["c","abcd"]
-    	var quizCheck = document.getElementById("quiz-check")
-        var quizResult = document.getElementById("quiz-result")
-        quizCheck.onclick = function(e) {
-        	var score = 0
-        	for (var q = 0; q < questionCount; q++) {
-                var option = document.querySelector("input[name='q" + (q+1) + "']:checked")
-                if (option) {
-                    if (correctAnswers[q].includes(option.value)) {
-                        score += 1
+            <button id="quiz-check">Check Answers</button>
+            <p id="quiz-result"></p>
+        </section>
+
+        <!-- ── App script (ES module; imports PDF.js from vendor/) ──────── -->
+        <script type="module" src="script.js"></script>
+
+        <script>
+            // Existing quiz-check logic
+            const questionCount = 2;
+            const correctAnswers = ["c", "abcd"];
+            document.getElementById("quiz-check").addEventListener("click", function () {
+                var score = 0;
+                for (var q = 0; q < questionCount; q++) {
+                    var option = document.querySelector("input[name='q" + (q + 1) + "']:checked");
+                    if (option && correctAnswers[q].includes(option.value)) {
+                        score += 1;
                     }
                 }
-                quizResult.textContent = "You got " + score + "/" + questionCount + " questions correct."
-            }
-        }
-    </script>
-
+                document.getElementById("quiz-result").textContent =
+                    "You got " + score + "/" + questionCount + " questions correct.";
+            });
+        </script>
+    </body>
 </html>
