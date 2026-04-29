@@ -28,67 +28,37 @@
             </div>
         </form>
         <script src="" async defer></script>
-    </body>
-    
+
+        <p></p>
+        <label for="add-text">Question text:</label><br>
+        <input id="add-text"></input><p></p>
+        <label for="add-option-a">A.</label>
+        <input class="add-option" id="add-option-a"></input>
+        <label for="add-a-correct">Correct?</label>
+        <input type="checkbox" id="add-a-correct"><br>
+        <label for="add-option-b">B.</label>
+        <input class="add-option" id="add-option-b"></input>
+        <label for="add-b-correct">Correct?</label>
+        <input type="checkbox" id="add-b-correct"><br>
+        <label for="add-option-c">C.</label>
+        <input class="add-option" id="add-option-c"></input>
+        <label for="add-c-correct">Correct?</label>
+        <input type="checkbox" id="add-c-correct"><br>
+        <label for="add-option-d">D.</label>
+        <input class="add-option" id="add-option-d"></input>
+        <label for="add-d-correct">Correct?</label>
+        <input type="checkbox" id="add-d-correct"><br>
+        <p></p>
+        <button id="add-question">Add Question</button>
+        <p id="add-status"></p>
     	<div id="question-container" class="question-container"></div>
         <p></p>
-        <button id="quiz-check">Check Answer</button>
+        <button id="quiz-check">Check Answers</button>
         <p id="quiz-result"></p>
-    <!-- This can (and should) be split off into a separate js file -->
-    <!-- But that's a future me problem -->
-    <script>
-    	var questionCount = 0
-        const correctAnswers = []
-        const questionContainer = document.getElementById("question-container")
-        
-        function createQuestion(text, answerChoices, correct) {
-        	questionCount += 1
-            correctAnswers.push(correct)
-            
-            const newQuestion = document.createElement("div")
-            questionContainer.appendChild(newQuestion)
-            newQuestion.className = "question"
-            const heading = document.createElement("h2")
-            newQuestion.appendChild(heading)
-            heading.textContent = "Question " + questionCount
-            const questionText = document.createElement("p")
-            newQuestion.appendChild(questionText)
-            questionText.innerHTML = text
-            const letters = ["a","b","c","d","e"] // add as many as necessary
-            for (var i = 0; i < answerChoices.length; i++) {
-                const option = document.createElement("input")
-                newQuestion.appendChild(option)
-                option.type = "radio"
-                option.name = "q" + questionCount
-                option.value = letters[i]
-                option.id = "q" + questionCount + "-" + letters[i]
-                const label = document.createElement("label")
-                newQuestion.appendChild(label)
-                label.htmlFor = option.id
-                label.textContent = letters[i].toUpperCase() + ". " + answerChoices[i]
-                
-                newQuestion.appendChild(document.createElement("br"))
-            }
-        }
-		
-        createQuestion("Which of the following fits in the blank?<br>This ___ example question.", ["is a", "are a", "is an", "are an"], "c")
-        createQuestion("What does 'present' mean in this context?<br>The kid was <em>present</em> at the party.", ["now", "here", "gift", "show"], "b")
-        
+    </body>
 
-    	const quizCheck = document.getElementById("quiz-check")
-        const quizResult = document.getElementById("quiz-result")
-        quizCheck.onclick = function(e) {
-        	var score = 0
-        	for (var q = 0; q < questionCount; q++) {
-                var option = document.querySelector("input[name='q" + (q+1) + "']:checked")
-                if (option) {
-                    if (correctAnswers[q].includes(option.value)) {
-                        score += 1
-                    }
-                }
-                quizResult.textContent = "You got " + score + "/" + questionCount + " questions correct."
-            }
-        }
-    </script>
+    <!-- TODO: split this into its own js file -->
+    <!-- TODO: find a better way to implement line breaks, formatting, etc. innerHTML is not secure -->
+    <script src="questions.js"></script>
 
 </html>
