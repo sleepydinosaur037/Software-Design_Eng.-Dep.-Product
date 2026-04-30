@@ -3,14 +3,47 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Reading Quiz Generator</title>
-        <meta name="description" content="Generate reading comprehension quizzes from uploaded book PDFs.">
+        <title>BOOKQ</title>
+        <meta name="description" content="BOOKQ — Generate reading comprehension quizzes from uploaded book PDFs.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="styles/style.css">
     </head>
     <body>
-        <h1>Reading Quiz Generator</h1>
-        <p>Upload a book PDF, choose a chapter or section, then generate quiz questions.</p>
+
+        <!-- ── App Header ─────────────────────────────────────────────── -->
+        <header class="app-header">
+            <div class="app-brand">
+                <span class="app-logo">BOOKQ</span>
+                <span class="app-tagline">Reading Quiz Generator</span>
+            </div>
+            <div class="header-controls">
+                <button id="theme-toggle" class="icon-btn" aria-label="Toggle light/dark mode">🌙 Dark</button>
+                <button id="sign-in-btn" class="secondary-btn">Sign In</button>
+                <span id="user-greeting" class="user-greeting" style="display:none;"></span>
+                <button id="sign-out-btn" class="secondary-btn" style="display:none;">Sign Out</button>
+            </div>
+        </header>
+
+        <!-- ── Auth Modal ─────────────────────────────────────────────── -->
+        <div id="auth-modal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+            <div class="modal-content">
+                <h2 id="auth-modal-title">Welcome to BOOKQ</h2>
+                <div id="auth-error" class="auth-error" style="display:none;" role="alert"></div>
+                <div class="form-group">
+                    <label for="auth-username">Username</label>
+                    <input type="text" id="auth-username" placeholder="Enter username" autocomplete="username" />
+                </div>
+                <div class="form-group">
+                    <label for="auth-password">Password</label>
+                    <input type="password" id="auth-password" placeholder="Enter password" autocomplete="current-password" />
+                </div>
+                <div class="auth-actions">
+                    <button id="auth-login-btn">Sign In</button>
+                    <button id="auth-register-btn" class="secondary-btn">Register</button>
+                    <button id="auth-cancel-btn" class="ghost-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
 
         <!-- ── Step 1: PDF Upload ─────────────────────────────────────── -->
         <section class="card" id="upload-section">
@@ -68,6 +101,16 @@
                 <button id="check-generated-btn">Check Answers</button>
                 <p id="gen-quiz-result"></p>
             </div>
+            <div id="save-quiz-section" style="display:none; margin-top:1rem;">
+                <button id="save-quiz-btn">💾 Save Quiz</button>
+                <p id="save-quiz-status" class="save-status"></p>
+            </div>
+        </section>
+
+        <!-- ── Saved Quizzes ──────────────────────────────────────────── -->
+        <section class="card" id="saved-section" style="display:none;">
+            <h2>My Saved Quizzes</h2>
+            <div id="saved-list" class="saved-list"></div>
         </section>
 
         <!-- ── App script (ES module; imports PDF.js from vendor/) ──────── -->

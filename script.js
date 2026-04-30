@@ -9,6 +9,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = "./vendor/pdfjs/pdf.worker.min.mjs";
 let pdfDoc = null;          // loaded PDF document
 let chapters = [];          // array of { title, startPage, endPage, text }
 let selectedChapterIdx = null;
+let currentUser = null;     // signed-in username, or null
+let lastGeneratedQuestions = null;  // most recent generated questions array
 
 // ── DOM refs ───────────────────────────────────────────────────────────────
 const pdfInput          = document.getElementById("pdf_upload");
@@ -30,7 +32,260 @@ const genQuizActions    = document.getElementById("gen-quiz-actions");
 const checkGeneratedBtn = document.getElementById("check-generated-btn");
 const genQuizResult     = document.getElementById("gen-quiz-result");
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+// ── New feature DOM refs ───────────────────────────────────────────────────
+const themeToggle       = document.getElementById("theme-toggle");
+const signInBtn         = document.getElementById("sign-in-btn");
+const signOutBtn        = document.getElementById("sign-out-btn");
+const userGreeting      = document.getElementById("user-greeting");
+const authModal         = document.getElementById("auth-modal");
+const authError         = document.getElementById("auth-error");
+const authUsername      = document.getElementById("auth-username");
+const authPassword      = document.getElementById("auth-password");
+const authLoginBtn      = document.getElementById("auth-login-btn");
+const authRegisterBtn   = document.getElementById("auth-register-btn");
+const authCancelBtn     = document.getElementById("auth-cancel-btn");
+const saveQuizSection   = document.getElementById("save-quiz-section");
+const saveQuizBtn       = document.getElementById("save-quiz-btn");
+const saveQuizStatus    = document.getElementById("save-quiz-status");
+const savedSection      = document.getElementById("saved-section");
+const savedList         = document.getElementById("saved-list");
+
+// ── Theme ──────────────────────────────────────────────────────────────────
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    themeToggle.textContent = theme === "light" ? "🌞 Light" : "🌙 Dark";
+    localStorage.setItem("bookq-theme", theme);
+}
+
+function initTheme() {
+    const saved = localStorage.getItem("bookq-theme") || "dark";
+    applyTheme(saved);
+}
+
+themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme") || "dark";
+    applyTheme(current === "dark" ? "light" : "dark");
+});
+
+// ── Auth helpers ───────────────────────────────────────────────────────────
+
+/** Derive a key from a password using PBKDF2 with a random salt. Returns { hash, salt } as hex strings. */
+async function hashPassword(password, saltHex = null) {
+    const encoder = new TextEncoder();
+    const saltBytes = saltHex
+        ? new Uint8Array(saltHex.match(/.{2}/g).map((b) => parseInt(b, 16)))
+        : crypto.getRandomValues(new Uint8Array(16));
+
+    const keyMaterial = await crypto.subtle.importKey(
+        "raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]
+    );
+    const derived = await crypto.subtle.deriveBits(
+        { name: "PBKDF2", salt: saltBytes, iterations: 600000, hash: "SHA-256" },
+        keyMaterial, 256
+    );
+    const hashHex = Array.from(new Uint8Array(derived)).map((b) => b.toString(16).padStart(2, "0")).join("");
+    const saltHexOut = Array.from(saltBytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+    return { hash: hashHex, salt: saltHexOut };
+}
+
+function getUsers() {
+    try { return JSON.parse(localStorage.getItem("bookq-users") || "{}"); } catch { return {}; }
+}
+
+function saveUsers(users) {
+    localStorage.setItem("bookq-users", JSON.stringify(users));
+}
+
+function setCurrentUser(username) {
+    currentUser = username;
+    if (username) {
+        localStorage.setItem("bookq-current-user", username);
+        userGreeting.textContent = `👤 ${username}`;
+        userGreeting.style.display = "inline";
+        signInBtn.style.display = "none";
+        signOutBtn.style.display = "inline";
+        renderSavedSection();
+    } else {
+        localStorage.removeItem("bookq-current-user");
+        userGreeting.style.display = "none";
+        signInBtn.style.display = "inline";
+        signOutBtn.style.display = "none";
+        savedSection.style.display = "none";
+        saveQuizSection.style.display = "none";
+    }
+}
+
+function initAuth() {
+    const saved = localStorage.getItem("bookq-current-user");
+    if (saved) setCurrentUser(saved);
+}
+
+// ── Auth modal ─────────────────────────────────────────────────────────────
+
+function openAuthModal() {
+    authUsername.value = "";
+    authPassword.value = "";
+    authError.style.display = "none";
+    authModal.style.display = "flex";
+    authUsername.focus();
+}
+
+function closeAuthModal() {
+    authModal.style.display = "none";
+}
+
+function showAuthError(msg) {
+    authError.textContent = msg;
+    authError.style.display = "block";
+}
+
+signInBtn.addEventListener("click", openAuthModal);
+authCancelBtn.addEventListener("click", closeAuthModal);
+authModal.addEventListener("click", (e) => { if (e.target === authModal) closeAuthModal(); });
+
+authLoginBtn.addEventListener("click", async () => {
+    const username = authUsername.value.trim();
+    const password = authPassword.value;
+    if (!username || !password) { showAuthError("Please enter a username and password."); return; }
+
+    const users = getUsers();
+    if (!users[username]) { showAuthError("No account found. Please register first."); return; }
+
+    const stored = users[username];
+    const { hash } = await hashPassword(password, stored.salt);
+    if (hash !== stored.hash) { showAuthError("Incorrect password."); return; }
+
+    setCurrentUser(username);
+    closeAuthModal();
+});
+
+authRegisterBtn.addEventListener("click", async () => {
+    const username = authUsername.value.trim();
+    const password = authPassword.value;
+    if (!username) { showAuthError("Please enter a username."); return; }
+    if (password.length < 8) { showAuthError("Password must be at least 8 characters."); return; }
+    if (!/^[A-Za-z0-9_-]{2,30}$/.test(username)) {
+        showAuthError("Username may only contain letters, numbers, _ or - (2-30 chars).");
+        return;
+    }
+
+    const users = getUsers();
+    if (users[username]) { showAuthError("That username is already taken. Please sign in."); return; }
+
+    const { hash, salt } = await hashPassword(password);
+    users[username] = { hash, salt };
+    saveUsers(users);
+    setCurrentUser(username);
+    closeAuthModal();
+});
+
+signOutBtn.addEventListener("click", () => {
+    setCurrentUser(null);
+    saveQuizSection.style.display = "none";
+    lastGeneratedQuestions = null;
+});
+
+// ── Save / Load quizzes ────────────────────────────────────────────────────
+
+function getSavedQuizzes(username) {
+    try { return JSON.parse(localStorage.getItem(`bookq-saved-${username}`) || "[]"); } catch { return []; }
+}
+
+function storeSavedQuizzes(username, quizzes) {
+    localStorage.setItem(`bookq-saved-${username}`, JSON.stringify(quizzes));
+}
+
+saveQuizBtn.addEventListener("click", () => {
+    if (!currentUser || !lastGeneratedQuestions) return;
+
+    const title = window.selectedChapterTitle || "Untitled Chapter";
+    const quizzes = getSavedQuizzes(currentUser);
+    const entry = {
+        id: Date.now(),
+        title,
+        questions: lastGeneratedQuestions,
+        savedAt: new Date().toLocaleString(),
+    };
+    quizzes.unshift(entry);
+    storeSavedQuizzes(currentUser, quizzes);
+
+    saveQuizStatus.textContent = `✓ Quiz saved as "${title}"`;
+    saveQuizBtn.disabled = true;
+    renderSavedSection();
+});
+
+function renderSavedSection() {
+    if (!currentUser) return;
+    const quizzes = getSavedQuizzes(currentUser);
+    savedList.innerHTML = "";
+
+    if (quizzes.length === 0) {
+        savedList.innerHTML = '<p class="empty-state">No saved quizzes yet. Generate a quiz and press Save.</p>';
+        savedSection.style.display = "block";
+        return;
+    }
+
+    quizzes.forEach((quiz) => {
+        const item = document.createElement("div");
+        item.className = "saved-item";
+
+        const info = document.createElement("div");
+        info.className = "saved-item-info";
+        info.innerHTML = `<div class="saved-item-title">${escapeHtml(quiz.title)}</div>
+            <div class="saved-item-meta">${quiz.questions.length} question${quiz.questions.length !== 1 ? "s" : ""} · Saved ${escapeHtml(quiz.savedAt)}</div>`;
+
+        const actions = document.createElement("div");
+        actions.className = "saved-item-actions";
+
+        const loadBtn = document.createElement("button");
+        loadBtn.textContent = "Load";
+        loadBtn.addEventListener("click", () => loadSavedQuiz(quiz));
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.className = "ghost-btn";
+        deleteBtn.addEventListener("click", () => {
+            const updated = getSavedQuizzes(currentUser).filter((q) => q.id !== quiz.id);
+            storeSavedQuizzes(currentUser, updated);
+            renderSavedSection();
+        });
+
+        actions.appendChild(loadBtn);
+        actions.appendChild(deleteBtn);
+        item.appendChild(info);
+        item.appendChild(actions);
+        savedList.appendChild(item);
+    });
+
+    savedSection.style.display = "block";
+}
+
+function loadSavedQuiz(quiz) {
+    window.selectedChapterTitle = quiz.title;
+    lastGeneratedQuestions = quiz.questions;
+    renderGeneratedQuiz(quiz.questions);
+
+    generateSection.style.display = "block";
+    saveQuizSection.style.display = "block";
+    saveQuizStatus.textContent = "";
+    saveQuizBtn.disabled = false;
+    generateSection.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+initTheme();
+initAuth();
+
+
 
 /** Patterns that commonly mark the start of a chapter or major section. */
 const CHAPTER_PATTERNS = [
@@ -48,7 +303,7 @@ function looksLikeChapterHeading(line) {
 
 function setStatus(msg, isError = false) {
     uploadStatus.textContent = msg;
-    uploadStatus.style.color = isError ? "#ff6b6b" : "#00e5ff";
+    uploadStatus.style.color = isError ? "var(--error)" : "var(--status-color)";
 }
 
 function showSpinner(visible) {
@@ -471,8 +726,9 @@ function renderGeneratedQuiz(questions) {
 
     if (questions.length === 0) {
         generatedOutput.innerHTML =
-            '<p style="color:#ff6b6b;">Could not generate enough questions from this text. ' +
+            '<p style="color:var(--error);">Could not generate enough questions from this text. ' +
             "Try selecting a longer section or one with more named characters and places.</p>";
+        saveQuizSection.style.display = "none";
         return;
     }
 
@@ -521,6 +777,13 @@ function renderGeneratedQuiz(questions) {
         genQuizResult.textContent =
             `You got ${score} / ${answerKey.length} question${answerKey.length !== 1 ? "s" : ""} correct.`;
     };
+
+    // Show save button only when a user is signed in
+    if (currentUser) {
+        saveQuizSection.style.display = "block";
+        saveQuizStatus.textContent = "";
+        saveQuizBtn.disabled = false;
+    }
 }
 
 // ── Generate button handler ────────────────────────────────────────────────
@@ -544,6 +807,7 @@ generateBtn.addEventListener("click", () => {
     setTimeout(() => {
         try {
             const questions = generateQuestions(text, count);
+            lastGeneratedQuestions = questions;
             renderGeneratedQuiz(questions);
         } finally {
             genSpinner.style.display = "none";
