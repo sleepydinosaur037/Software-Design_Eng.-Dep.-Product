@@ -1,45 +1,151 @@
+/* ── Theme Variables ─────────────────────────────────────────────────────── */
+:root {
+    --bg:              #0d0d0d;
+    --surface:         #1a1a2e;
+    --surface2:        #0f3460;
+    --surface3:        #004d60;
+    --text:            #e0e0e0;
+    --text-muted:      #c0c0c0;
+    --accent:          #00e5ff;
+    --accent-hover:    #00bcd4;
+    --accent-dim:      #00e5ff44;
+    --accent-light:    #80deea;
+    --border:          #00e5ff33;
+    --border-hover:    #00e5ff88;
+    --preview-bg:      #111;
+    --preview-border:  #333;
+    --preview-text:    #d0d0d0;
+    --success-bg:      #00402a;
+    --success-border:  #00e676;
+    --success-text:    #00e676;
+    --error:           #ff6b6b;
+    --input-bg:        #0f3460;
+    --modal-overlay:   rgba(0, 0, 0, 0.75);
+    --modal-bg:        #16213e;
+    --header-bg:       #111827;
+    --status-color:    #00e5ff;
+}
+
+[data-theme="light"] {
+    --bg:              #f0f4f8;
+    --surface:         #ffffff;
+    --surface2:        #e3f2fd;
+    --surface3:        #b3e5fc;
+    --text:            #1a1a2e;
+    --text-muted:      #555;
+    --accent:          #0097a7;
+    --accent-hover:    #00838f;
+    --accent-dim:      #0097a733;
+    --accent-light:    #0097a7;
+    --border:          #0097a733;
+    --border-hover:    #0097a788;
+    --preview-bg:      #fafafa;
+    --preview-border:  #ccc;
+    --preview-text:    #333;
+    --success-bg:      #e8f5e9;
+    --success-border:  #4caf50;
+    --success-text:    #2e7d32;
+    --error:           #c62828;
+    --input-bg:        #e3f2fd;
+    --modal-overlay:   rgba(0, 0, 0, 0.5);
+    --modal-bg:        #ffffff;
+    --header-bg:       #1a1a2e;
+    --status-color:    #0097a7;
+}
+
 /* ── Base ─────────────────────────────────────────────────────────────────── */
 *, *::before, *::after {
     box-sizing: border-box;
 }
 
 body {
-    background-color: #0d0d0d;
-    color: #e0e0e0;
+    background-color: var(--bg);
+    color: var(--text);
     font-family: "Segoe UI", Arial, sans-serif;
     margin: 0;
-    padding: 1.5rem;
-    max-width: 860px;
-    margin-inline: auto;
-}
-
-h1 {
-    color: #00e5ff;
-    margin-bottom: 0.25rem;
+    padding: 0;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 h2 {
-    color: #00e5ff;
+    color: var(--accent);
     font-size: 1.1rem;
     margin-top: 0;
 }
 
 h3 {
-    color: #80deea;
+    color: var(--accent-light);
     margin: 0.5rem 0;
 }
 
 p, label {
-    color: #c0c0c0;
+    color: var(--text-muted);
+}
+
+/* ── App Header ──────────────────────────────────────────────────────────── */
+.app-header {
+    background: var(--header-bg);
+    border-bottom: 2px solid var(--accent);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.app-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+}
+
+.app-logo {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+}
+
+.app-tagline {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.user-greeting {
+    font-size: 0.9rem;
+    color: var(--accent-light);
+    font-weight: 600;
+}
+
+/* ── Main content wrapper ────────────────────────────────────────────────── */
+body > section.card,
+body > #saved-section {
+    max-width: 860px;
+    margin-inline: auto;
+    margin-top: 1.5rem;
 }
 
 /* ── Cards (step containers) ─────────────────────────────────────────────── */
 .card {
-    background: #1a1a2e;
-    border: 1px solid #00e5ff33;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 1.25rem 1.5rem;
     margin-bottom: 1.5rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    transition: background-color 0.2s;
 }
 
 /* ── File upload ─────────────────────────────────────────────────────────── */
@@ -50,7 +156,7 @@ p, label {
 
 .file-label-text {
     display: inline-block;
-    background: #00e5ff;
+    background: var(--accent);
     color: #0d0d0d;
     font-weight: 600;
     padding: 0.45rem 1rem;
@@ -60,7 +166,7 @@ p, label {
 }
 
 .file-label:hover .file-label-text {
-    background: #00bcd4;
+    background: var(--accent-hover);
 }
 
 #pdf_upload {
@@ -76,15 +182,15 @@ p, label {
     margin-top: 0.6rem;
     font-size: 0.9rem;
     min-height: 1.2em;
-    color: #00e5ff;
+    color: var(--status-color);
 }
 
 /* ── Loading spinner ─────────────────────────────────────────────────────── */
 .spinner {
     width: 28px;
     height: 28px;
-    border: 4px solid #00e5ff44;
-    border-top-color: #00e5ff;
+    border: 4px solid var(--accent-dim);
+    border-top-color: var(--accent);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
     margin-top: 0.5rem;
@@ -108,8 +214,8 @@ p, label {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #0f3460;
-    border: 1px solid #00e5ff33;
+    background: var(--surface2);
+    border: 1px solid var(--border);
     border-radius: 6px;
     padding: 0.6rem 1rem;
     cursor: pointer;
@@ -118,39 +224,39 @@ p, label {
 }
 
 .chapter-item:hover {
-    background: #16213e;
-    border-color: #00e5ff88;
+    background: var(--surface);
+    border-color: var(--border-hover);
 }
 
 .chapter-item.selected {
-    background: #004d60;
-    border-color: #00e5ff;
-    outline: 2px solid #00e5ff;
+    background: var(--surface3);
+    border-color: var(--accent);
+    outline: 2px solid var(--accent);
 }
 
 .chapter-title {
-    color: #e0e0e0;
+    color: var(--text);
     font-size: 0.95rem;
     flex: 1;
 }
 
 .chapter-pages {
-    color: #80deea;
+    color: var(--accent-light);
     font-size: 0.8rem;
     white-space: nowrap;
 }
 
 /* ── Text preview ────────────────────────────────────────────────────────── */
 .text-preview {
-    background: #111;
-    border: 1px solid #333;
+    background: var(--preview-bg);
+    border: 1px solid var(--preview-border);
     border-radius: 6px;
     padding: 1rem;
     max-height: 220px;
     overflow-y: auto;
     font-size: 0.85rem;
     line-height: 1.6;
-    color: #d0d0d0;
+    color: var(--preview-text);
     white-space: pre-wrap;
     word-break: break-word;
     margin-bottom: 1rem;
@@ -158,7 +264,7 @@ p, label {
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 button {
-    background: #00e5ff;
+    background: var(--accent);
     color: #0d0d0d;
     border: none;
     border-radius: 5px;
@@ -170,7 +276,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-    background: #00bcd4;
+    background: var(--accent-hover);
 }
 
 button:disabled {
@@ -178,14 +284,53 @@ button:disabled {
     cursor: not-allowed;
 }
 
+.secondary-btn {
+    background: transparent;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+}
+
+.secondary-btn:hover:not(:disabled) {
+    background: var(--accent-dim);
+}
+
+.ghost-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border-hover);
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+}
+
+.ghost-btn:hover:not(:disabled) {
+    background: var(--surface2);
+    color: var(--text);
+}
+
+.icon-btn {
+    background: transparent;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    padding: 0.4rem 0.85rem;
+    font-size: 0.85rem;
+    border-radius: 20px;
+    min-width: 5.5rem;
+}
+
+.icon-btn:hover:not(:disabled) {
+    background: var(--accent-dim);
+}
+
 /* ── Selected info banner ────────────────────────────────────────────────── */
 .selected-info {
     margin-top: 0.75rem;
-    background: #00402a;
-    border: 1px solid #00e676;
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
     border-radius: 5px;
     padding: 0.5rem 0.9rem;
-    color: #00e676;
+    color: var(--success-text);
     font-size: 0.9rem;
 }
 
@@ -198,24 +343,26 @@ button:disabled {
 }
 
 .question {
-    background: #0f3460;
-    border: 1px solid #00e5ff22;
+    background: var(--surface2);
+    border: 1px solid var(--border);
     border-radius: 6px;
     padding: 0.9rem 1.1rem;
 }
 
 .question p {
     margin: 0.4rem 0 0.7rem;
+    color: var(--text);
 }
 
 .question label {
     display: block;
     margin: 0.3rem 0;
     cursor: pointer;
+    color: var(--text-muted);
 }
 
 .question label:hover {
-    color: #00e5ff;
+    color: var(--accent);
 }
 
 /* ── Generate-quiz controls ──────────────────────────────────────────────── */
@@ -228,16 +375,16 @@ button:disabled {
 }
 
 .generate-controls label {
-    color: #c0c0c0;
+    color: var(--text-muted);
     font-size: 0.95rem;
     white-space: nowrap;
 }
 
 .generate-controls input[type="number"] {
     width: 5rem;
-    background: #0f3460;
-    color: #e0e0e0;
-    border: 1px solid #00e5ff55;
+    background: var(--input-bg);
+    color: var(--text);
+    border: 1px solid var(--border-hover);
     border-radius: 5px;
     padding: 0.4rem 0.6rem;
     font-size: 0.95rem;
@@ -247,12 +394,151 @@ button:disabled {
 }
 
 .generate-controls input[type="number"]:focus {
-    outline: 2px solid #00e5ff;
-    border-color: #00e5ff;
+    outline: 2px solid var(--accent);
+    border-color: var(--accent);
 }
 
 #gen-quiz-result {
     margin-top: 0.6rem;
     font-weight: 600;
-    color: #00e5ff;
+    color: var(--accent);
 }
+
+/* ── Save quiz ───────────────────────────────────────────────────────────── */
+.save-status {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--success-text);
+}
+
+.empty-state {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* ── Saved quizzes list ──────────────────────────────────────────────────── */
+.saved-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.saved-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.65rem 1rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.saved-item-info {
+    flex: 1;
+}
+
+.saved-item-title {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.saved-item-meta {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 0.2rem;
+}
+
+.saved-item-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.saved-item-actions button {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.8rem;
+}
+
+/* ── Auth modal ──────────────────────────────────────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--modal-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+.modal-content {
+    background: var(--modal-bg);
+    border: 1px solid var(--border-hover);
+    border-radius: 10px;
+    padding: 2rem;
+    width: min(420px, 90vw);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 1.25rem;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.35rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.form-group input {
+    width: 100%;
+    background: var(--input-bg);
+    color: var(--text);
+    border: 1px solid var(--border-hover);
+    border-radius: 5px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+}
+
+.form-group input:focus {
+    outline: 2px solid var(--accent);
+    border-color: var(--accent);
+}
+
+.auth-actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+}
+
+.auth-actions button {
+    flex: 1;
+    min-width: 5rem;
+}
+
+.auth-error {
+    background: #3d0000;
+    border: 1px solid var(--error);
+    border-radius: 5px;
+    padding: 0.5rem 0.75rem;
+    color: var(--error);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+[data-theme="light"] .auth-error {
+    background: #ffebee;
+}
+
