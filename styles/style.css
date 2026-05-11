@@ -249,17 +249,45 @@ body > #saved-section {
 /* ── Text preview ────────────────────────────────────────────────────────── */
 .text-preview {
     background: var(--preview-bg);
-    border: 1px solid var(--preview-border);
-    border-radius: 6px;
-    padding: 1rem;
-    max-height: 220px;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: 1.5rem;
+    max-height: 420px;
     overflow-y: auto;
-    font-size: 0.85rem;
-    line-height: 1.6;
+    font-size: 0.95rem;
+    line-height: 1.8;
     color: var(--preview-text);
     white-space: pre-wrap;
     word-break: break-word;
-    margin-bottom: 1rem;
+    margin: 1rem 0 1.5rem 0;
+    letter-spacing: 0.3px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(to bottom right, var(--preview-bg), rgba(0, 229, 255, 0.04));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.text-preview::-webkit-scrollbar {
+    width: 8px;
+}
+
+.text-preview::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.text-preview::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 4px;
+}
+
+.text-preview::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+}
+
+.preview-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 1rem 0 1.5rem 0;
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
@@ -354,6 +382,18 @@ button:disabled {
     color: var(--text);
 }
 
+.question-meta {
+    margin: 0.2rem 0 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.question-feedback {
+    margin: 0.75rem 0 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
 .question label {
     display: block;
     margin: 0.3rem 0;
@@ -396,6 +436,39 @@ button:disabled {
 .generate-controls input[type="number"]:focus {
     outline: 2px solid var(--accent);
     border-color: var(--accent);
+}
+
+/* ── Page range controls ──────────────────────────────────────────────── */
+.page-range-controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+.page-range-controls input[type="number"] {
+    width: 5rem;
+    background: var(--input-bg);
+    color: var(--text);
+    border: 1px solid var(--border-hover);
+    border-radius: 5px;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+    text-align: center;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.page-range-controls input[type="number"]:focus {
+    outline: 2px solid var(--accent);
+    border-color: var(--accent);
+}
+
+.page-range-label,
+.page-range-info {
+    color: var(--text-muted);
+    font-size: 0.9rem;
 }
 
 #gen-quiz-result {
@@ -540,5 +613,242 @@ button:disabled {
 
 [data-theme="light"] .auth-error {
     background: #ffebee;
+}
+
+/* ── Full text preview modal ──────────────────────────────────────────────── */
+.full-text-modal-content {
+    background: var(--modal-bg);
+    border: 1px solid var(--border-hover);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    width: min(85vw, 900px);
+    max-height: 85vh;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+}
+
+.full-text-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.75rem 2rem 1.5rem 2rem;
+    border-bottom: 2px solid var(--accent);
+    gap: 1rem;
+    background: linear-gradient(to right, var(--modal-bg), rgba(0, 229, 255, 0.05));
+}
+
+.full-text-modal-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--accent);
+}
+
+.close-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: 2px solid transparent;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.close-btn:hover {
+    color: var(--text);
+    background: var(--surface2);
+    border-color: var(--accent);
+    border-radius: 4px;
+}
+
+.close-btn:active {
+    transform: scale(0.95);
+}
+
+#full-text-content {
+    background: var(--preview-bg);
+    color: var(--preview-text);
+    border: none;
+    padding: 2rem;
+    flex: 1;
+    overflow-y: auto;
+    font-size: 1rem;
+    line-height: 1.9;
+    white-space: pre-wrap;
+    word-break: break-word;
+    letter-spacing: 0.3px;
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+#full-text-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+#full-text-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#full-text-content::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 5px;
+}
+
+#full-text-content::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+}
+
+/* ── PDF Viewer Modal ────────────────────────────────────────────────────── */
+.pdf-viewer-modal-content {
+    background: var(--modal-bg);
+    border: 1px solid var(--border-hover);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    width: min(90vw, 1000px);
+    max-height: 90vh;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+}
+
+.pdf-viewer-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.75rem 2rem 1.5rem 2rem;
+    border-bottom: 2px solid var(--accent);
+    gap: 1rem;
+    background: linear-gradient(to right, var(--modal-bg), rgba(0, 229, 255, 0.05));
+}
+
+.pdf-viewer-modal-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--accent);
+}
+
+.pdf-viewer-pages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: var(--preview-bg);
+}
+
+.pdf-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pdf-page-canvas {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    max-width: 100%;
+    height: auto;
+}
+
+.pdf-page-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* ── Quiz Export Modal ──────────────────────────────────────────────────── */
+.quiz-export-modal-content {
+    background: var(--modal-bg);
+    border: 1px solid var(--border-hover);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    width: min(90vw, 950px);
+    max-height: 90vh;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.5);
+}
+
+.quiz-export-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.75rem 2rem 1.5rem 2rem;
+    border-bottom: 2px solid var(--accent);
+    gap: 1rem;
+    background: linear-gradient(to right, var(--modal-bg), rgba(0, 229, 255, 0.05));
+}
+
+.quiz-export-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--accent);
+}
+
+.quiz-export-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+}
+
+.copy-status {
+    font-size: 0.9rem;
+    color: var(--success-text);
+    min-height: 1.2em;
+}
+
+.quiz-export-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    background: var(--preview-bg);
+    color: var(--preview-text);
+    border: none;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.quiz-export-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.quiz-export-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.quiz-export-content::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 5px;
+}
+
+.quiz-export-content::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
+}
+
+#full-text-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+#full-text-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#full-text-content::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 5px;
+}
+
+#full-text-content::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-hover);
 }
 

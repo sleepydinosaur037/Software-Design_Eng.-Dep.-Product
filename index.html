@@ -65,6 +65,13 @@
         <section class="card" id="chapter-section" style="display:none;">
             <h2>Step 2 — Select a Chapter or Section</h2>
             <div id="chapter-list" class="chapter-list" role="list"></div>
+            <div class="page-range-controls">
+                <div class="page-range-label">Or choose a custom page range:</div>
+                <label>Start page: <input id="start-page-input" type="number" min="1" /></label>
+                <label>End page: <input id="end-page-input" type="number" min="1" /></label>
+                <button id="apply-page-range-btn">Use page range</button>
+                <span id="page-range-info" class="page-range-info"></span>
+            </div>
         </section>
 
         <!-- ── Step 3: Text Preview ───────────────────────────────────── -->
@@ -72,9 +79,35 @@
             <h2>Step 3 — Preview Selected Text</h2>
             <h3 id="preview-title"></h3>
             <pre id="preview-text" class="text-preview"></pre>
-            <button id="use-chapter-btn" disabled>Use this chapter for quiz generation</button>
+            <div class="preview-actions">
+                <button id="use-chapter-btn" disabled>Use this chapter for quiz generation</button>
+                <button id="view-full-text-btn" class="secondary-btn">View Full Text</button>
+                <button id="view-pdf-btn" class="secondary-btn">View in PDF</button>
+            </div>
             <p id="selected-info" class="selected-info" style="display:none;"></p>
         </section>
+
+        <!-- ── Full Text Preview Modal ────────────────────────────────── -->
+        <div id="full-text-modal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="full-text-modal-title">
+            <div class="full-text-modal-content">
+                <div class="full-text-modal-header">
+                    <h2 id="full-text-modal-title">Full Text</h2>
+                    <button id="close-full-text-btn" class="close-btn" aria-label="Close">✕</button>
+                </div>
+                <pre id="full-text-content" class="full-text-content"></pre>
+            </div>
+        </div>
+
+        <!-- ── PDF Viewer Modal ──────────────────────────────────────── -->
+        <div id="pdf-viewer-modal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="pdf-viewer-title">
+            <div class="pdf-viewer-modal-content">
+                <div class="pdf-viewer-modal-header">
+                    <h2 id="pdf-viewer-title">PDF Pages</h2>
+                    <button id="close-pdf-viewer-btn" class="close-btn" aria-label="Close">✕</button>
+                </div>
+                <div id="pdf-viewer-pages" class="pdf-viewer-pages"></div>
+            </div>
+        </div>
 
         <!-- ── Step 4: Quiz Generation ────────────────────────────────── -->
         <section class="card" id="generate-section" style="display:none;">
@@ -99,6 +132,7 @@
             <div id="generated-quiz-output" class="question-container" style="margin-top:1rem;"></div>
             <div id="gen-quiz-actions" style="display:none; margin-top:1rem;">
                 <button id="check-generated-btn">Check Answers</button>
+                <button id="copy-quiz-btn" class="secondary-btn">Copy Quiz</button>
                 <p id="gen-quiz-result"></p>
             </div>
             <div id="save-quiz-section" style="display:none; margin-top:1rem;">
@@ -112,6 +146,36 @@
             <h2>My Saved Quizzes</h2>
             <div id="saved-list" class="saved-list"></div>
         </section>
+
+        <!-- ── Quiz Title Input Modal ────────────────────────────────── -->
+        <div id="quiz-title-modal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="quiz-title-label">
+            <div class="modal-content">
+                <h2>Quiz Title</h2>
+                <div class="form-group">
+                    <label for="quiz-title-input" id="quiz-title-label">Enter a title for this quiz:</label>
+                    <input type="text" id="quiz-title-input" placeholder="e.g., Chapter 3 Reading Check" />
+                </div>
+                <div class="auth-actions">
+                    <button id="quiz-title-confirm-btn">Create</button>
+                    <button id="quiz-title-cancel-btn" class="ghost-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Quiz Export Modal ─────────────────────────────────────── -->
+        <div id="quiz-export-modal" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="quiz-export-title">
+            <div class="quiz-export-modal-content">
+                <div class="quiz-export-header">
+                    <h2 id="quiz-export-title"></h2>
+                    <button id="close-quiz-export-btn" class="close-btn" aria-label="Close">✕</button>
+                </div>
+                <div class="quiz-export-actions">
+                    <button id="copy-to-clipboard-btn" class="secondary-btn">📋 Copy to Clipboard</button>
+                    <span id="copy-status" class="copy-status"></span>
+                </div>
+                <pre id="quiz-export-content" class="quiz-export-content"></pre>
+            </div>
+        </div>
 
         <!-- ── App script (ES module; imports PDF.js from vendor/) ──────── -->
         <script type="module" src="script.js"></script>
